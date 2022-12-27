@@ -1,0 +1,140 @@
+# A cylindar that walks back and forth
+bodies:
+  - name: base_footprint
+    pose: [0, 0, 0] 
+    type: dynamic  
+    color: [1, 0, 0, 0.75] 
+    footprints:
+      - type: circle
+        radius: 0.5
+        center: [-1, 0.0]
+        density: 1
+        # layers: ["2d"]
+plugins:
+
+    # required, specify DiffDrive type to load the plugin
+  - type: DiffDrive
+
+    # required, name of the plugin
+    name: turtlebot_drive
+
+    # required, body of a model to set velocities and obtain odometry
+    body: base_footprint
+
+    # optional, defaults to odom, the name of the odom frame
+    odom_frame_id: odom
+
+    # optional, defaults to inf, rate to publish odometry at, in Hz
+    pub_rate: .inf
+
+    # optional, defaults to "cmd_vel", the topic to subscribe for velocity
+    # commands
+    twist_sub: cmd_vel
+
+    # optional, defaults to "odometry/filtered", the topic to advertise for
+    # publish noisy odometry
+    odom_pub: odometry/filtered
+
+    # optional, defaults to "odometry/ground_truth", the topic to advertise for publish
+    # no noise ground truth odometry
+    ground_truth_pub: odometry/ground_truth
+
+    # optional, defaults to "twist", the topic to publish noisy local frame velocity
+    # that simulates encoder readings
+    twist_pub: twist
+
+    # optional, defaults to true, enables the advertising and publishing of both
+    # ground truth and noisy odometry
+    enable_odom_pub: true
+
+    # optional, defaults to true, enables the advertising and publishing of noisy local
+    # frame velocity
+    enable_twist_pub: true
+
+    # optional, defaults to [0, 0, 0], corresponds to noise on [x, y, yaw],
+    # the variances of gaussian noise to apply to the pose components of the
+    # odometry message
+    odom_pose_noise: [0, 0, 0]
+
+    # optional, defaults to [0, 0, 0], corresponds to noise on
+    # [x velocity, y velocity, yaw rate], the variances of gaussian noise to
+    # apply to the twist components of the odometry message
+    odom_twist_noise: [0, 0, 0]
+
+    # optional, defaults to the diagonal [x, y, yaw] components replaced by
+    # odom_pose_noise with all other values equals zero, must have length of 36,
+    # represents a 6x6 covariance matrix for x, y, z, roll, pitch, yaw.
+    # This does not involve in any of the noise calculation, it is simply
+    # the output values of odometry pose covariance
+    odom_pose_covariance: [0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0]
+
+    # optional, defaults to the diagonal [x velocity, y velocity, yaw rate]
+    # components replaced by odom_twist_noise with all other values equals zero,
+    # must have length of 36, represents a 6x6 covariance matrix for rates x,
+    # y, z, roll, pitch, yaw. This does not involve in any of the noise
+    # calculation, it is simply the output values of odometry twist covariance
+    odom_twist_covariance: [0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0]
+
+    # optional, defaults each parameter to 0.0 which means "no limit"
+    # sets dynamics constraints on angular velocity, acceleration (in rads/sec; rads/sec/sec)
+    angular_dynamics:
+      acceleration_limit: 0.0   # max acceleration (away from 0), in rads/s/s; 0.0 means "no limit"
+      deceleration_limit: 0.0   # max deceleration (towards 0), in rads/s/s; 0.0 means "no limit"; left blank, will default to acceleration_limit value
+      velocity_limit: 0.0       # max absolute velocity in rads/s; 0.0 means "no limit"
+
+    # optional, defaults each parameter to 0.0 which means "no limit"
+    # sets dynamics constraints on linear velocity, acceleration (in m/s; m/s/s)
+    linear_dynamics:
+      acceleration_limit: 0.0   # max acceleration (away from 0), in m/s/s; 0.0 means "no limit"
+      deceleration_limit: 0.0   # max deceleration (towards 0), in m/s/s; 0.0 means "no limit"; left blank, will default to acceleration_limit value
+      velocity_limit: 0.0       # max absolute velocity in m/s; 0.0 means "no limit"
+
+ # required, specify Laser to load this plugin
+  - type: Laser
+
+    # required, name of the laser plugin, must be unique
+    name: laser_back
+
+    # optional, default to "scan", topic to publish the laser data
+    topic: scan
+
+    # required, name of the body to attach the laser to
+    body: base_footprint
+
+    # optional, default to [0, 0, 0], in the form of [x, y, yaw], the position
+    # and orientation to place laser's coordinate system
+    origin: [0, 0, 0]
+
+    # optional, default to true, whether to publish TF
+    broadcast_tf: true
+
+    # optional, default to name of this plugin, the TF frame id to publish TF with
+    # only used when broadcast_tf=true
+    frame: laser_back
+
+    # required, maximum range of the laser, minimum range assumed to be zero, in meters
+    range: 20
+
+    # optional, default to 0.0, standard deviation of a gaussian noise
+    noise_std_dev: 0
+
+    # required, w.r.t to the coordinate system, scan from min angle to max angle
+    # at steps of specified increments
+    angle: {min: -2.356194490192345, max: 2.356194490192345, increment: 0.004363323129985824}
+
+    # optional, default to inf (as fast as possible), rate to publish laser scan messages
+    update_rate: .inf
+
+    # optional, default to ["all"], the layers to operate the laser at,
+    # lasers only detects objects in the specified layers
+    layers: ["2d"]
